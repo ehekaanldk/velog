@@ -48,6 +48,8 @@ import feedparser
 import git
 import os
 from datetime import datetime
+import pprint
+
 
 # 벨로그 RSS 피드 URL (본인 계정)
 rss_url = 'https://api.velog.io/rss/@ehekaanldk'
@@ -104,6 +106,8 @@ series: "{series}"
     # 무조건 덮어쓰기 (수정 반영)
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(markdown)
+
+pprint.pprint(entry.tags)
 
 # 깃 커밋 & 푸시
 repo.git.add(all=True)
