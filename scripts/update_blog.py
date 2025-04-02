@@ -28,20 +28,23 @@ for entry in feed.entries:
     file_name = entry.title
     file_name = file_name.replace('/', '-')  # 슬래시를 대시로 대체
     file_name = file_name.replace('\\', '-')  # 백슬래시를 대시로 대체
-    # 필요에 따라 추가 문자 대체
     file_name += '.md'
     file_path = os.path.join(posts_dir, file_name)
 
     # 파일이 이미 존재하지 않으면 생성
     if not os.path.exists(file_path):
-        content = (
-            entry.get('description') or
-            entry.get('summary') or
-            (entry.get('content')[0]['value'] if 'content' in entry and entry.content else '')
-        )
+        if hasattr(entry, 'content'):
+            content = entry.content[0].value
+        elif hasattr(entry, 'description'):
+            content = entry.description
+        elif hasattr(entry, 'summary'):
+            content = entry.summary
+        else:
+            content = '본문이 없습니다.'
 
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
+
 
 # 변경 사항을 깃허브에 푸시
 repo.git.push()
