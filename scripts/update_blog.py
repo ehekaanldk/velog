@@ -83,6 +83,16 @@ series: "{series}"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(markdown)
 
+
+# ✅ 여기부터 Git 작업!
+repo.git.add(all=True)
+
+if repo.is_dirty(untracked_files=True):
+    repo.git.commit('-m', 'Update Velog posts')
+    repo.git.push()
+else:
+    print("✅ No changes to commit.")
+
 # Git 커밋 & 푸시
 repo.git.add(all=True)
 repo.git.commit('-m', 'Update Velog posts')  # 변경 없으면 무시됨
