@@ -107,8 +107,6 @@ series: "{series}"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(markdown)
 
-pprint.pprint(entry.tags)
-
 # 깃 커밋 & 푸시
 repo.git.add(all=True)
 repo.git.commit('-m', 'Update Velog posts')  # 변경사항 없을 땐 에러 나도 무시됨
