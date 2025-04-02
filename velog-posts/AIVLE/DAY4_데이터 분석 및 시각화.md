@@ -2,7 +2,7 @@
 title: "DAY4_데이터 분석 및 시각화"
 date: "2025-03-31"
 link: "https://velog.io/@ehekaanldk/DAY4%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EC%8B%9C%EA%B0%81%ED%99%94"
-series: "AIVLE"
+series: "Uncategorized"
 ---
 
 <p>데이터 시각화01</p>
