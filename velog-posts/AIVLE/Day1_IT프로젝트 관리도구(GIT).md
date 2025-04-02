@@ -2,7 +2,7 @@
 title: "Day1_IT프로젝트 관리도구(GIT)"
 date: "2025-03-26"
 link: "https://velog.io/@ehekaanldk/Day1IT%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B4%80%EB%A6%AC%EB%8F%84%EA%B5%ACGIT"
-series: "Uncategorized"
+series: "AIVLE"
 ---
 
 <h3 id="버전관리가-무엇인가">버전관리가 무엇인가?</h3>

@@ -2,7 +2,7 @@
 title: "Part5) Mathmatics for ML-1"
 date: "2025-01-25"
 link: "https://velog.io/@ehekaanldk/Part5-Mathmatics-for-ML-1"
-series: "Uncategorized"
+series: "AIMERS"
 ---
 
 본문이 없습니다.
