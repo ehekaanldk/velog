@@ -5,6 +5,10 @@ import git
 import os
 from datetime import datetime
 
+# Git repo
+repo_path = '.'
+repo = git.Repo(repo_path)
+
 # ✅ Git user 설정 추가
 repo.git.config('--global', 'user.email', 'github-actions[bot]@users.noreply.github.com')
 repo.git.config('--global', 'user.name', 'github-actions[bot]')
