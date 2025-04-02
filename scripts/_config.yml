@@ -1,0 +1,4 @@
+title: ehekaanldk's Velog Sync Blog
+description: Velog에서 자동으로 가져온 글 모음
+theme: jekyll-theme-cayman  # 다른 테마도 가능
+markdown: kramdown
