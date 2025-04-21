@@ -1,7 +1,7 @@
 ---
 title: "[AICE] tip 정리"
 date: "2025-04-17"
-link: "https://velog.io/@ehekaanldk/AICE"
+link: "https://velog.io/@ehekaanldk/AICE-tip-%EC%A0%95%EB%A6%AC"
 series: "Uncategorized"
 ---
 
@@ -41,3 +41,33 @@ sparse_categorical_crossentropy 는 타깃 레이블의 형태가 정수 인덱�
 <li>y데이터에 대해 label이 1부터 10까지의 데이터로 이루어져 있을 때, 8개의 값만 존재하고 2개의 값이 존재하지 않다는고 했을 때, 모델링의 <code>n_class</code>를 8로 설정하지 않도록 주의해야한다. 
 <code>[2,8,5,6,7,4,3,10]</code> 의 값만 존재하는 데이터이지만 8로 설정하게 되면 <code>[1,2,3,4,5,6,7,8]</code> 로 설정되어 분류 모델의 의도와 맞지 않게 된다. 데이터의 명세서를 잘 확인해서 모델링 과정에서 반영해야 한다. </li>
 </ol>
+<hr />
+<h3 id="📂-데이터-불러오기저장">📂 데이터 불러오기/저장</h3>
+<p>pd.read_csv(), pd.read_excel(), pd.read_json()</p>
+<p>df.to_csv(), df.to_excel()</p>
+<h3 id="📊-데이터-구조-확인">📊 데이터 구조 확인</h3>
+<p>df.head(), df.tail()</p>
+<p>df.shape, df.columns, df.index</p>
+<p>df.info(), df.describe()</p>
+<h3 id="🔍-데이터-선택인덱싱">🔍 데이터 선택/인덱싱</h3>
+<p>df['col'], df[['col1', 'col2']]</p>
+<p>df.loc[row_indexer, col_indexer] → 라벨 기반</p>
+<p>df.iloc[row_idx, col_idx] → 위치 기반</p>
+<p>df[df['col'] &gt; 10] → 조건 필터링</p>
+<h3 id="🔧-데이터-전처리">🔧 데이터 전처리</h3>
+<p>df.isnull(), df.isna(), df.notnull()</p>
+<p>df.fillna(value), df.dropna()</p>
+<p>df.drop(columns=[]), df.rename(columns={})</p>
+<p>df.astype()</p>
+<h3 id="🔁-변환-및-집계">🔁 변환 및 집계</h3>
+<p>df.groupby('col').mean()</p>
+<p>df.agg(['mean', 'sum', 'count'])</p>
+<p>df.pivot_table()</p>
+<p>df.apply(func), df.map(), df.replace()</p>
+<p>df.sort_values(by='col')</p>
+<h3 id="🧼-문자열-처리">🧼 문자열 처리</h3>
+<p>df['col'].str.lower(), str.contains(), str.replace()</p>
+<h3 id="🧮-고유값빈도">🧮 고유값/빈도</h3>
+<p>df['col'].unique()</p>
+<p>df['col'].nunique()</p>
+<p>df['col'].value_counts()</p>
