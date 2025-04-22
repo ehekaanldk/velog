@@ -201,6 +201,11 @@ response = llm(messages)</code></pre><ul>
 ]</code></pre></li>
 <li>모델에게 메시지 리스트를 전달하면 모델이 각 역할을 이해하고 문맥에 맞게 응답한다.</li>
 </ul>
+<h3 id="추가-format_message">[추가] format_message()</h3>
+<p>Python에서의 print() 문에 format() 메서드와 같은 의미이다.
+LangChain에서도 프롬프트 템플릿 안에 {변수}가 있을 경우, format_messages()를 통해 그 값을 실제로 넣어주는 과정이 필요하다.</p>
+<p>LangChain에서 ChatPromptTemplate.from_messages()는 메시지의 틀(템플릿)을 정의하는 단계이고,
+format_messages()는 그 틀에 데이터를 채워 실제로 LLM이 이해할 수 있는 메시지를 만드는 단계이다.</p>
 <hr />
 <h2 id="3-파싱output-parser">3. 파싱(Output Parser)</h2>
 <blockquote>
