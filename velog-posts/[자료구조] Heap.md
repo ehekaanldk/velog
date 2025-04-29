@@ -15,7 +15,7 @@ series: "Uncategorized"
 <h2 id="2-heap의-종류">2. Heap의 종류</h2>
 <p>최대 힙 : <strong>부모 노드</strong>가 항상 자식 노드보다 <strong>크다.</strong> =&gt; 제일 큰값이 root
 최소 힙 : <strong>부모 노드</strong>가 항상 자식 노드보다 <strong>작다.</strong> =&gt; 제일 작은값이 root
-<img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/fdff0ce8-7d4c-4b94-acd1-08e506136e67/image.png" /></p>
+<img src="https://velog.velcdn.com/images/ehekaanldk/post/4aa49802-912a-4716-8fa9-287cf975ba35/image.png" width="600px" /></p>
 <hr />
 <h2 id="3-heap의-특징">3. Heap의 특징</h2>
 <table>
