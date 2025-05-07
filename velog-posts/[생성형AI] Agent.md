@@ -7,37 +7,56 @@ series: "Uncategorized"
 
 <p>고도화된 RAG를 agent로 만든다. </p>
 <p>langGraph를 이용해서 agent를 구축한다. </p>
-<h2 id="ai-agent">AI Agent</h2>
+<h2 id="1-ai-agent">1. AI Agent</h2>
 <p>스스로 의사 결정하며, 도구를 사용하여, 목표를 달성하는 시스템 =&gt; 문제를 스스로 해결하는 시스템
 RAG에서의 외부지식 문서 이외에도 도구를 사용하여 검색을 통한 확장이 가능하다.</p>
-<h2 id="langgraph">LangGraph</h2>
-<p>ai agent 간의 형업을 <strong>그래프 기반</strong>으로 설계하는 프레임워크이다. 
+<h2 id="2-langgraph">2. LangGraph</h2>
+<p><code>AI Agent</code> 간의 형업을 <strong>그래프 기반</strong>으로 설계하는 프레임워크이다. 
 그래프는 워크플로우로 작업의 순서를 의미한다. 노드와 엣지로 이루어져 있다. </p>
-<h3 id="구성요소">구성요소</h3>
+<h3 id="21-그래프의-구성요소">2.1. 그래프의 구성요소</h3>
 <ul>
-<li>node : Node는 작업이나 판단을 하는 수행단위이다. 
+<li><strong>node</strong> : Node는 작업이나 판단을 하는 수행단위이다. 
   사용자의 질문을 이해하는 작업
   필요한 정보를 검색하는 작업</li>
-<li>edge : node간의 연결을 나타내며 작업의 흐름이다. 
+<li><strong>edge</strong> : node간의 연결을 나타내며 작업의 흐름이다. 
   node의 작업 이후에 다른 노드로 이동할지 결정하는 작업</li>
-<li>conditional edge : 특정 조건에 따라 노드 간의 분기처리하는 작업이다</li>
-<li>state : 그래프의 현재 상태값을 나태난다.</li>
+<li><strong>conditional edge</strong> : 특정 조건에 따라 노드 간의 분기처리하는 작업이다</li>
+<li><strong>state</strong> : 그래프의 현재 상태값을 나타낸다.</li>
 </ul>
-<p>Node는 함수로 state를 입력으로 받아서 함수를 처리하고 state로 출력한다.
-Edge는 어디로 갈지의 연결이다. State는 그래프에서 주고받는 데이터들의 틀을 말한다.
-conditional edge는 조건에 의한 분기로 결과에 따라서 다른 node로 이동하도록 한다.</p>
-<p>node는 들어온 것을 처리하고 결과만 내뱉고 어디로 이동해야하는지 알 수 없다.</p>
-<p>조건에 해당하는 함수를 정의하고 그에 따른 이동을 conditional edge로 구현한다.</p>
-<p>node를 정의한 함수에 넣고 결과에 따라서 다른 node로 간다. </p>
-<h2 id="state">State</h2>
+<p>Node는 함수로 state를 입력으로 받아서 함수를 처리하고 state로 출력한다. Edge는 어디로 갈지의 연결이다. State는 그래프에서 주고받는 데이터들의 틀을 말한다. conditional edge는 조건에 의한 분기로 결과에 따라서 다른 node로 이동하도록 한다.</p>
+<p>node는 들어온 것을 처리하고 결과만 내뱉고 어디로 이동해야하는지 알 수 없다. 어디로 이동하는지 정하기 위해서 조건에 해당하는 함수를 정의하고 그에 따른 이동을 conditional edge로 구현한다. node를 정의한 함수에 넣고 결과에 따라서 다른 node로 분기되어 이동한다. </p>
+<h3 id="22-그래프의-예시">2.2 그래프의 예시</h3>
+<p><strong>1. LLM 프록시 방식</strong> 
+가장 간단한 방법으로 사용자가 입력한 요청을 그대로 LLM에게 전달하여 응답을 그대로 사용자에게 반환한다. </p>
+<p><strong>2. 프롬프트 엔지니어링을 통한 개선</strong>
+사용자의 입력과 사전에 정의된 가이드를 포함해 구조화된 문서의 형태로 LLM에게 구체적인 요청을 전달한다. </p>
+<p><strong>3. 프롬프트 체이닝</strong></p>
+<ul>
+<li>단일 LLM + 여러 단계의 프롬프트 체이닝
+여러 개의 프롬프트를 순차적으로 LLM에게 요청하고 각 단계의 출력을 다음 단계의 입력으로 사용한다. 모호한 질문을 답변에 따라서 명확하게 잡을 수 있음</li>
+<li>다중 LLM + 역할 분리 체이닝
+여러 LLM을 단계별로 활용하여 각 단계에서 특화된 역할을 수행하고 연결을 통해서 최종 응답을 생성한다. </li>
+</ul>
+<p><strong>4. RAG</strong>
+프롬프트를 만들기 전에 외부DB에서의 관련 정보를 검색하여, 검색 문서와 사용자의 질문으로 구성한 프롬프트를 LLM에게 요청한다. </p>
+<blockquote>
+<p><strong>AI GENT</strong>는 목표 달성을 위해서 LLM의 답변을 잘 받아내야 한다. 
+<strong>내부적인 판단은 모두 LLM이 한다.</strong></p>
+</blockquote>
+<ul>
+<li>분기1) tool이 필요한가?</li>
+<li>분기2) tool의 결과가 질문과 관련이 있는가?</li>
+</ul>
+<hr />
+<h2 id="3-state">3. State</h2>
 <blockquote>
 <p><strong>state</strong>는 그래프 전체에서 주고 받는 <strong>데이터 구조(틀)</strong> 을 정의한다.</p>
 </blockquote>
 <p>그래프의 노드의 입력과 출력를 관리하는 딕셔너리 형태의 자료형이다.
-각 노드들은 입력과 출력을 state에 담아서 처리한다. </p>
-<p><code>TypedDict</code> 를 사용해서 class의 형태로 state를 정의한다.
+<strong>각 노드들은 입력과 출력을 state에 담아서 처리한다.</strong> </p>
+<p><code>TypedDict 클래스</code> 를 사용해서 class의 형태로 state를 정의한다.
 State라는 이름의 클래스로 state의 틀을 만들어준다.
-클래스의 key갑과 type을 정해서 선언한다.</p>
+클래스의 key이름과 type을 정해서 선언한다.</p>
 <pre><code>from typing import TypedDict
 
 class State(TypedDict):
