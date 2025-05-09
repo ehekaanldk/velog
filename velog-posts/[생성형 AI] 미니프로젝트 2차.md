@@ -147,3 +147,22 @@ state에 evalution이라는 키가 반드시 존재해야 한다. </li>
 state에 evalution이라는 키가 있으면 해당 값을 가져오고, 없으면 기본값 빈 리스트를 반환한다. </li>
 </ul>
 <hr />
+<p>파싱
+(1) JSON 형태라면 → json.loads()</p>
+<pre><code>import json
+
+text = '{&quot;질문과의 연관성&quot;: &quot;상&quot;, &quot;답변의 구체성&quot;: &quot;중&quot;}'  # GPT가 출력한 문자열
+parsed = json.loads(text)
+
+print(parsed[&quot;질문과의 연관성&quot;])  # &quot;상&quot;</code></pre><p>(2) 파이썬 딕셔너리처럼 생겼지만 JSON은 아닐 때 → ast.literal_eval()</p>
+<pre><code>import ast
+
+text = &quot;{'질문과의 연관성': '상', '답변의 구체성': '중'}&quot;  # 작은따옴표로 돼있으면 JSON 아님
+parsed = ast.literal_eval(text)
+
+print(parsed[&quot;답변의 구체성&quot;])  # &quot;중&quot;</code></pre><p>파싱 오류가 많이 나는 이유
+| 원인                    | 해결 방법                                           |
+| --------------------- | ----------------------------------------------- |
+| GPT가 앞뒤에 설명을 붙임       | → 프롬프트에 “<strong>설명 없이 딕셔너리만 출력</strong>” 하라고 명시             |
+| ```json 같은 마크다운 포함 | → <code>re.sub()</code>로 제거하거나 GPT에 출력 포맷 명확히 전달           |
+| 작은따옴표 사용              | → <code>ast.literal_eval()</code> 사용 또는 프롬프트에서 <code>&quot;큰따옴표&quot;</code> 유도 |</p>
