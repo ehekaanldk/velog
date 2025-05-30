@@ -586,7 +586,7 @@ ORM 매핑을 위한 핵심 역할인 어노테이션을 해야한다. </p>
 객체의 자료형 타입까지 사용가능해서 
 RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.</p>
 <p>추상적으로 소스코드 부르듯이 CURD 다 만들어준다. </p>
-<h3 id="영속성-컨텍스트persistence-context">영속성 컨텍스트(Persistence Context)</h3>
+<h2 id="영속성-컨텍스트persistence-context">영속성 컨텍스트(Persistence Context)</h2>
 <blockquote>
 <p>JPA가 엔티티(객체)를 저장하고 추적하는 1차 캐시 공간이다. </p>
 </blockquote>
@@ -594,11 +594,32 @@ RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.
 <li>객체와 DB가 연결된 상태로 JPA는 DB에 바로 저장하지 않고, 먼저 메모장에 써두고 관리한다. </li>
 <li>이 메모장이 영속성 컨텍스트로 애플리케이션(JPA)와 DB 사이의 객체를 보관하는 <strong>가상의 DB(캐시)역할</strong>을 한다.</li>
 </ul>
+<p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/144e79fd-f819-4f49-b523-a6941b0fefef/image.png" /></p>
+<table>
+<thead>
+<tr>
+<th>컬럼명</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@Id</code></td>
+<td>DB의 기본키 값 (<code>id</code>) = 자바 객체의 식별자</td>
+</tr>
+<tr>
+<td><code>Entity</code></td>
+<td>해당 ID를 가진 <strong>자바 객체 그 자체</strong></td>
+</tr>
+<tr>
+<td><code>스냅샷</code></td>
+<td>원래 상태를 복사해둔 값 → **변경 감지(Diff)**용</td>
+</tr>
+</tbody></table>
 <h4 id="영속-상태">영속 상태</h4>
 <blockquote>
 <p>메모장에 적혀서 JPA가 관리 중인 객체</p>
 </blockquote>
-<p>사용하는 이유</p>
+<h3 id="영속성-컨텍스트-사용하는-이유">영속성 컨텍스트: 사용하는 이유</h3>
 <ul>
 <li>기억해두고, SQL을 다시 안 날림</li>
 <li>감시하면서, 값이 바뀌면 알아서 UPDATE</li>
@@ -607,7 +628,7 @@ RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.
 <p>1차 캐시는 Map&lt;엔티티의 ID, 엔티티 객체&gt; 으로
 <strong>ID(PK)</strong>를 <strong>Key</strong>, <strong>Entity 객체</strong>를 <strong>Value</strong>로 저장하는
 <strong>Map 형태의 캐시 저장소</strong>입니다.</p>
-<h4 id="엔티티-매니저">엔티티 매니저</h4>
+<h3 id="엔티티-매니저">엔티티 매니저</h3>
 <blockquote>
 <p>영속성 컨텍스트를 관리하는 JPA의 핵심 객체
 👉 즉, 엔티티(자바 객체)를 <strong>저장, 조회, 수정, 삭제하는 모든 JPA 작업</strong>은 <strong>EntityManager가 처리한다.</strong></p>
@@ -665,7 +686,7 @@ RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.
 <li>DB에서 조회된 결과를 기반으로 <code>News</code> 객체를 <code>new</code> 안하고 영속 객체로 만들어 반환</li>
 <li>이 <code>News</code> 객체는 영속 상태로 전환됨(영속성 컨텍스트에 등록-관리대상)</li>
 </ul>
-<h4 id="쓰기-지연-sql-저장소">쓰기 지연 SQL 저장소</h4>
+<h3 id="쓰기-지연-sql-저장소">쓰기 지연 SQL 저장소</h3>
 <blockquote>
 <p>persist() 했을 때 바로 DB에 INSERT SQL 을 보내지 않고, 트랜잭션이 commit되지 전까지 SQL을 모아두는 공간</p>
 </blockquote>
@@ -684,7 +705,7 @@ RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.
   → flush()
   → 쓰기 지연 저장소의 SQL 생성
   → JDBC를 통해 DB에 실제 INSERT</p>
-<h4 id="엔티티-생명-주기">엔티티 생명 주기</h4>
+<h3 id="엔티티-생명-주기">엔티티 생명 주기</h3>
 <ul>
 <li>비영속 : 객체 생성 후 영속성 컨텍스트와 관계가 없는 상태(em은 모름)
 <code>Book book = new Book();</code></li>
@@ -695,7 +716,47 @@ RDBMS의 데이터 구조와 객체 지향 모델 사이의 간격을 좁힌다.
 <li>삭제 : 객체를 삭제한 상태
 <code>Book book = new Book();</code>와 <code>em.remove(book);</code> 으로 반드시 영속상태에서만 가능</li>
 </ul>
-<hr />
+<h3 id="flush">flush()</h3>
+<blockquote>
+<p>영속성 컨텍스트에 모아둔 변경사항들을 DB에 실제 SQL로 반영하는 작업</p>
+</blockquote>
+<p>flush()는 SELECT와 관계 없고,
+<strong>변경된 엔티티(INSERT/UPDATE/DELETE)</strong>를 <strong>DB에 강제로 반영</strong>하는 트리거다.
+단, 트랜잭션을 커밋하지는 않음 — 즉, flush는 SQL 날리기만 하는 동기화 도구!</p>
+<ul>
+<li><strong>flush와 commit은 개발자가 직접 호출해야 한다.</strong></li>
+</ul>
+<p>flush()가 영속성 컨텍스트 전체를 DB와 동기화함으로 
+쓰기 지연 SQL 저장소(INSERT) 대상 + 1차 캐시의 변경추적결과(UPDATE, DELETE) 대상</p>
+<ul>
+<li><p>persist() → 쓰기 지연 저장소 (INSERT용)</p>
+</li>
+<li><p>setXXX() → 1차 캐시에서 값 변경 감지 (Dirty Checking → UPDATE용)</p>
+</li>
+<li><p>flush() → 이 둘을 모아서 SQL을 생성하고 DB에 전송만 (아직 commit은 아님)</p>
+</li>
+<li><p>[추가] SELECT 는 데이터를 읽는 작업이지, DB에 변경사항을 반영하는 작업이 아니여서 flush() 대상이 아님</p>
+</li>
+<li><p>transaction.commit()을 명시적으로 호출하면 자동 flush()로 SQL을 날리고, DB 반영을 확정짓는다.</p>
+</li>
+</ul>
+<h4 id="pql은">PQL은?</h4>
+<blockquote>
+<p>직접 작성하는 쿼리 언어 — 복잡한 조건, 조인, 정렬 등에 사용</p>
+</blockquote>
+<pre><code>em.createQuery(&quot;SELECT b FROM Book b WHERE b.title = :title&quot;)
+  .setParameter(&quot;title&quot;, &quot;JPA&quot;)
+  .getResultList();</code></pre><h4 id="getxxx">getXXX()</h4>
+<blockquote>
+<p>엔티티 객체의 필드값을 조회하는 메서드</p>
+</blockquote>
+<p>JPA에서 값을 읽기만 하므로 SQL이 발생하지 않는다. 
+프록시 객체일 경우에는 , getXXX()rk 호출되는 순간에 DB에 SELECT SQL이 발생한다.
+필요 시점에 데이터를 가져올 수 있다. </p>
+<pre><code>Member member = em.find(Member.class, 1L);
+Team team = member.getTeam(); // 프록시 객체
+// 아직 DB 접근 없음
+String name = team.getName(); // 이 순간 SELECT 쿼리 날아감!</code></pre><hr />
 <h2 id="실습">실습</h2>
 <p>h2를 사용하는 것은 JDBC driver도 함께 다운받는 것과 같다. </p>
 <p>파일의 이름을 application.yml 로 변경하거나 지우고 다시 생성한다. 
@@ -752,44 +813,91 @@ public class News { // 엔티티이다. 엔티티이면 jpa에서 테이블로 �
 
 }</code></pre><p>News 테이블이 만들어진 것을 확인할 수 있다. 
 <img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/f4d179d7-98f6-48e0-8a50-c9e7885ff339/image.png" /></p>
-<ul>
-<li><p>@NoArgsConstructor</p>
-</li>
-<li><p>@AllArgsConstructor</p>
-</li>
-<li><p>@Getter/ @Setter</p>
-</li>
-<li><p>@Enumerated </p>
-</li>
-</ul>
-<h2 id="과거-jdbc-코드">과거 JDBC 코드</h2>
-<p>과거에는 코드에 SQL도 쓰고, 연결하고 등등의 코드가 길게 작성하였다. </p>
-<pre><code>Connection conn = ...
-PreparedStatement stmt = conn.prepareStatement(&quot;INSERT INTO news ...&quot;);
-stmt.setString(1, &quot;제목&quot;);
-stmt.executeUpdate();
-</code></pre><h2 id="jpa-1">JPA</h2>
+<hr />
+<h2 id="spring-data-jpa">Spring Data JPA</h2>
 <blockquote>
-<p>JPA는 자바 객체를 데이터베이스에 쉽게 저장하고 꺼내기 위한 표준기술이다. </p>
+<p>JPA기반 저장소를 쉽게 구현하고 사용하게 해주는 spring의 기술</p>
 </blockquote>
-<ul>
-<li>자바 클래스 = DB 테이블</li>
-<li>자바 객체 = DB 행(ROW)</li>
-<li>SQL를 안써도 자바 코드로 DB 조작이 가능하다!</li>
+<blockquote>
+<p>JPA를 한 단계 추상화시킨 Repository라는 인터페이스를 제공하고, 인터페이스를 내부적으로 구현하는 부분에서 JPA가 사용된다.</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<p>[ 애플리케이션 코드 ]
+        ↓
+[ Spring Data JPA ] ← 편의 도구 (자동 Repository 생성 등)
+        ↓
+[ JPA (Java Persistence API) ] ← 자바 ORM 표준 인터페이스
+        ↓
+[ Hibernate ] ← JPA의 가장 널리 쓰이는 구현체
+        ↓
+[ JDBC ] ← Java DB 연결 API
+        ↓
+[ 실제 DB (MySQL, PostgreSQL, H2 등) ]</p>
+<p>기존의 JPA만 사용한 경우</p>
+<pre><code>EntityManager em = ...
+Book book = em.find(Book.class, 1L);</code></pre><p>spring data jpa를 사용하면, </p>
+<pre><code>public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {}
+bookRepository.findById(1L); // 자동으로 구현 + 실행됨</code></pre><ul>
+<li>즉, EntityManager 없이도 CRUD, 쿼리 작성, 페이징까지 자동화됨</li>
 </ul>
-<pre><code>@Entity
-public class News {
-    @Id
-    private Long id;
-    private String title;
-}</code></pre><p>em은 entityManager 로 JPA의 도구이다. persist는 영속성을 부여한다. </p>
-<pre><code>em.persist(news); // news 객체를 DB에 저장해줘</code></pre><p>entityManager를 사용하는 것도 복잡해서 spring data jpa와 jparepository를 사용한다. </p>
-<h2 id="repository">Repository</h2>
-<p>스프링에서 repository 는 데이터베이스와 직접 통신하는 계층이다. 
-데이터를 저장하거나 꺼낼 떄 사용하는 역할이다. </p>
-<h3 id="jparepository란">JpaRepository란?</h3>
-<p>JpaRepository는 Spring Data JPA에서 제공하는 인터페이스이다.</p>
-<p>👉 쉽게 말해: 데이터베이스 작업(CRUD)을 자동으로 해주는 도구예요.</p>
+<p>정리하면, </p>
+<table>
+<thead>
+<tr>
+<th>구성 요소</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JDBC</td>
+<td>&quot;전선을 꽂는 기술&quot;</td>
+</tr>
+<tr>
+<td>JPA</td>
+<td>&quot;코드를 표준화한 인터페이스&quot;</td>
+</tr>
+<tr>
+<td>Hibernate</td>
+<td>&quot;JPA를 실제로 동작시키는 전기장치&quot;</td>
+</tr>
+<tr>
+<td><strong>Spring Data JPA</strong></td>
+<td>&quot;버튼 하나로 모든 전기를 켜주는 스마트 리모컨&quot;</td>
+</tr>
+</tbody></table>
+<h3 id="도메인">도메인</h3>
+<blockquote>
+<p>도메인은 비즈니스 영역, 문제 영역
+보통 도메인 폴더 안에는 &quot;엔티티 클래스&quot;가 들어간다.
+현실 세계 비즈니스의 개념이고 이를 코드로 표현한 것이 엔티티</p>
+</blockquote>
+<pre><code>📦 com.example.book
+ ┣ 📁 controller     ← 화면과 상호작용
+ ┣ 📁 service        ← 비즈니스 로직
+ ┣ 📁 repository     ← DB 저장소
+ ┣ 📁 domain         ← 💡 도메인 (주요 Entity 클래스들)
+     ┣ 📄 Book.java  ← @Entity
+     ┣ 📄 User.java  ← @Entity</code></pre><ul>
+<li><p>@NoArgsConstructor : jpa는 DB데이터를 자바 객체로 바꿀 때(조회 시) 기본생성자가 필요해서 기본 생성자 자동으로 만들어준다. </p>
+</li>
+<li><p>@AllArgsConstructor : jpa의 entity는 반드시 기본 생성자가 있어야 해서 모든 필드를 인자로 받는 생성자를 자동으로 만들어준다. </p>
+</li>
+<li><p>@Getter/ @Setter : 클래스의 모든 필드에 대해 자동으로 getter, setter메서드를생성해준다.</p>
+</li>
+<li><p>@Entity : 이 자바 클래스는 JPA가 관리하는 테이블 매핑 대상으로 선언한다. (클래스와 db테이블을 연결한다.)</p>
+</li>
+<li><p>@Table : 이 클래스가 매핑될 DB 테이블의 이름을 지정한다. <code>@Table(name = &quot;books_table&quot;)</code></p>
+</li>
+<li><p>@Id : 이 필드는 테이블의 PK이다(하나 이상 있어야 JPA객체를 식별가능/기본키가 있어야 조회,변경,삭제가 가능)</p>
+</li>
+<li><p>@GeneratedValue : 기본키 값을 자동으로 생성하게 지정하는 어노테이션</p>
+</li>
+<li><p>@Column : 이 필드는 DB의 컬럼에 대응하고, PK가 아닌 일반 데이터 필드에 붙인다.</p>
+</li>
+<li><p>@Enumerated : 자바의 enum 타입은 DB에서 표현할 수가 없기 때문에 알려준다.</p>
+</li>
+</ul>
 <hr />
 <p>DB 서버
 domain 에서 book을 만든다.
