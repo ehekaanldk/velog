@@ -866,7 +866,7 @@ bookRepository.findById(1L); // 자동으로 구현 + 실행됨</code></pre><ul>
 <td>&quot;버튼 하나로 모든 전기를 켜주는 스마트 리모컨&quot;</td>
 </tr>
 </tbody></table>
-<h3 id="도메인">도메인</h3>
+<h3 id="도메인-domain">도메인 Domain</h3>
 <blockquote>
 <p>도메인은 비즈니스 영역, 문제 영역
 보통 도메인 폴더 안에는 &quot;엔티티 클래스&quot;가 들어간다.
@@ -899,91 +899,299 @@ bookRepository.findById(1L); // 자동으로 구현 + 실행됨</code></pre><ul>
 </li>
 </ul>
 <hr />
-<p>DB 서버
+<h2 id="연관-관계-매핑">연관 관계 매핑</h2>
+<p>엔티티 클래그 간의 관계를 만들어주는 것이다. 
+객체는 참조를 사용해서 관계를 맺는다.
+테이블은 외래 키를 사용해서 관계를 맺는다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>객체(Object)</th>
+<th>테이블(Table)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>관계 맺기 방식</td>
+<td><strong>참조(Reference)</strong></td>
+<td><strong>외래 키(Foreign Key)</strong></td>
+</tr>
+<tr>
+<td>방향성</td>
+<td><strong>단방향 or 양방향</strong></td>
+<td>항상 <strong>양방향</strong></td>
+</tr>
+</tbody></table>
+<p>객체는 메모리 참조이므로 단방향으로도 충분하지만, 테이블 관계에서는 양방향이다. </p>
+<p>모든 테이블은 모두 기본키(PK)를 반드시 가진다. 
+외래키(FK)를 가진다는 것은 관계를 가진다는 것으로 다른 테이블과의 관계가 있다는 의미이다.</p>
+<h3 id="연관관계의-종류-다중성">연관관계의 종류: 다중성</h3>
+<table>
+<thead>
+<tr>
+<th>관계 유형</th>
+<th>설명</th>
+<th>JPA 어노테이션</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔹 다대일 (N:1)</td>
+<td>여러 객체 → 하나 참조</td>
+<td><code>@ManyToOne</code></td>
+</tr>
+<tr>
+<td>🔹 일대다 (1:N)</td>
+<td>하나 → 여러 객체 참조</td>
+<td><code>@OneToMany(mappedBy = &quot;...&quot;)</code></td>
+</tr>
+<tr>
+<td>🔹 일대일 (1:1)</td>
+<td>1:1 대응 관계</td>
+<td><code>@OneToOne</code></td>
+</tr>
+<tr>
+<td>🔹 다대다 (N:M)</td>
+<td>둘 다 여러 개 참조</td>
+<td><code>@ManyToMany</code> (중간 테이블 사용 권장)</td>
+</tr>
+</tbody></table>
+<p>연관 관계의 주인은 일대다에서 다의 부분이 FK를 가진다. 연관관계의 주인이 외래키(FK)가 된다. </p>
+<p>테이블의 정보가 더 많은 곳이 연관관계의 주인이 된다. 
+테이블끼리의 관계는 모두 양방향이다.</p>
+<h3 id="다중성--일대일">다중성 : 일대일</h3>
+<p>일대일 관계는 양쪽이 서로 하나의 관계만 갖는다.
+보통은 주테이블보다, 대상 테이블에 외래키를 달아서 확장할 수 있다. </p>
+<ul>
+<li>식별 체계로써는 일대일이 맞지만, 관심사에 따른 중요도가 달라서 나누는 경우</li>
+<li>초기에 테이블에서는 생성하지 않았지만, 추가로 확장되는 경우</li>
+</ul>
+<p>@JoinColumn
+외래키를 매핑한다는 말로 <strong>객체와 데이터베이스 간의 관계를 코드로 표현</strong>한다는 뜻이다.</p>
+<ul>
+<li><p>Book 은 User 와 다대일 관계</p>
+</li>
+<li><p>User 테이블의 PK는 참조하는 외래키 컬럼과 연결됨</p>
+<pre><code>@Entity
+public class Book {
+
+  @Id
+  @GeneratedValue
+  private Long bookId;
+
+  // 🔽 이 부분이 외래키를 매핑한 코드
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = &quot;user_id&quot;) // DB의 외래키 컬럼명
+  private User user;
+}
+</code></pre></li>
+</ul>
+<pre><code>
+### 다중성 : 다대일/일대다
+다대일 관계의 반대 방향을 항상 일대다 관계이다. 
+
+- 다쪽에만 @ManyToOne 으로 어노테이션을 달아주면 **단방향 연관관계**가 성립되고,
+- 다쪽에는 @ManyToOne 을 달아주고, 일쪽에는 @OneToMany 를 달아주면 **양방향 연관관계**가 성립된다.
+일쪽에 달아주는 @OneToMany 어노테이션은 조회를 위한 부분으로 선택적으로 조회조건 mappedBy을 달아주면 된다.
+
+### 다중성 : 다대다
+관계형 데이터베이스는 정규화된 테이블 2개로 다대다 관계를 표현한다.
+- 서로의 연관관계 주인을 찾기 어려워서 ER에서는 다대다 관계가 없다. 
+- 객체 지향에서는 다대다 관계가 가능하며 ORM에게 넘길 때, 중간에 테이블을 하나 추가해서 두 개의 일대다 관계를 만들어주는 것이 일반적이다.
+
+### 순환 참조
+양방향 관계에서 ```user```를 Json 직렬화하면 순환이 끝없이 반복되는 문제가 발생한다. </code></pre><p>public class User {
+    private List books;
+}</p>
+<p>public class Book {
+    private User user;
+}</p>
+<pre><code>참조가 되는 쪽인 부모에 @JsonManagedReference 를 달아주고, 참조를 하는 쪽인 자식에 @JsonBackReference를 달아서 순환이 더이상 일어나지 않는 부분을 표시해준다. </code></pre><p>// 부모 쪽
+@OneToMany(mappedBy = &quot;user&quot;)
+@JsonManagedReference
+private List books;</p>
+<p>// 자식 쪽
+@ManyToOne
+@JsonBackReference
+private User user;</p>
+<pre><code>
+## Repository
+원래는 엔티티 매니절르 사용해야 CRUD를 해야하지만 JPA에서 제공하는 인터페이스인 Repository를 사용하면 자동으로 CRUD 메서드가 생성된다. 
+
+@Repository 어노테이션을 붙여서 
+```public interface 객체명+Repository extends JpaRepository&lt;엔티티 클래스 객체명, 객체명의 pk타입&gt;{}``` 으로 작성해준다.
+
+- **Repository**라는 스프링에서 제공하는 기본 인터페이스가 있음.
+- CRUD가 가능한 **CrudRepository 인터페이스**가 있다.
+- paging과 sorting이 가능한 **PaginfAndSortingRepository 인터페이스**가 있다.
+- **JpaRepository**는 위의 인터페이스들을 모두 상속하는 **종합 선물세트!** 로 보통 이 인터페이스만 작성하면 문제없다.
+
+---
+1. controller 단계
+controller단계에서 @GetMapping이나 @PostMapping으로 API엔드포인트로 사용자의 요청을 받고 호출하는 함수를 작성해준다. 
+- 해당 함수(createBook())는 service 계층에게 위힘하는 코드가 내부에 작성된다.
+- controkller에서 repository 구현체를 사용하기 위해서 DI의존성 주입이 필요하다.</code></pre><p>@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;/books&quot;)
+public class BookController {
+    @Autowired
+    private BookRepository bookRepository; // +bookRepository.findAll()</p>
+<pre><code>private final BookService bookService;
+
+// 사용자가 POST /books 로 요청 보내면 이 함수가 호출됨
+@PostMapping
+public Book createBook(@RequestBody BookDTO.Post bookDto) {
+    // 👉 서비스로 DTO를 전달함
+    return bookService.create(bookDto);
+}</code></pre><p>}</p>
+<pre><code>- BookController는 사용자의 요청을 받아서 응답을 처리한다. (MVC에서 Controller)
+- 의존성 주입으로 @Autowired 로 스프링이 필요한 객체를 자동으로 주입
+- BookRepository 라는 인터페이스의 구현체를 찾아서 자동으로 필드에 넣어준다.
+- BookController가 직접 BookRepository(데이터베이스)에 접근한다.
+
+![](https://velog.velcdn.com/images/ehekaanldk/post/17f79703-1637-4520-8849-8031f60715ff/image.png)
+
+Postman으로 확인할 수도 있다.
+![](https://velog.velcdn.com/images/ehekaanldk/post/8dd183f2-8e6f-408b-a7f4-8cef870a12f0/image.png)
+
+2. Service 단계
+controller 단계에서 호출한 create 함수의 실제 로직이 작성되는 부분으로 SQL 구문없이 요청에 대한 응답이 구현된다. 
+- 현재 DTO를 Entity로 변환해서 bookRepository.save() 함수를 호출한다. </code></pre><p>@Service
+@RequiredArgsConstructor
+public class BookService {</p>
+<pre><code>private final BookRepository bookRepository;
+
+// 컨트롤러에서 호출됨
+public Book create(BookDTO.Post dto) {
+    // 👉 DTO → Entity 변환
+    Book book = Book.builder()
+            .book_name(dto.getBook_name())
+            .summary(dto.getSummary())
+            .book_image(dto.getBook_image())
+            .create_date(LocalDateTime.now())
+            .build();
+
+    // 👉 Repository에 저장 (DB에 INSERT 발생)
+    return bookRepository.save(book);
+}</code></pre><p>}</p>
+<pre><code>
+3. Repository 단계
+엔티티에 대한 H2 DB의 CRUD 기능을 전부 자동으로 구현해주기 위해서 JpaRepository를 사용한다.
+- 별도 코드 없어도 기본 save(), findById() 등 제공됨
+- 자동으로 구현된 SQL을 DB에게 넘겨준다.</code></pre><p>public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
+}</p>
+<pre><code>4. DTO 클래스
+DTO는 클라이언트 요청 바디를 받기 위한 용도로
+내부에는 jpa 엔티티로 변환해야 DB에 저장이 가능하다.</code></pre><p>@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+public class BookDTO {</p>
+<pre><code>public static class Post {
+    private String book_name;
+    private String summary;
+    private String book_image;
+}
+
+// Response DTO 등은 여기에 같이 둘 수 있음</code></pre><p>}</p>
+<pre><code>
+5. 전체적인 흐름 정리
+**[Client - POST /books] **
+→ Controller: createBook(@RequestBody BookDTO.Post)
+→ Service: create(BookDTO.Post dto)
+→ DTO → Entity 변환
+→ Repository: save(Book)
+→ JPA: INSERT into book...
+
+
+
+
+---
+
+DB 서버
 domain 에서 book을 만든다.
 repository 에서 interface로 만든다.
 controller 통신
-DTO </p>
-<ul>
-<li>controller가 repos 구현체가 필요하다. =&gt; 요청을 해주어야 한다.</li>
-<li>DI 의존성 주입으로 controller가 repository가 필요하다~!</li>
-</ul>
-<ol>
-<li><p>필드에 직접 넣어주세요</p>
-<pre><code>public class BookController {
- @Autowired
- private BookRepository bookRepository; // +bookRepository.findAll()
+DTO 
 
- @GetMapping(&quot;/books&quot;)
- public List&lt;Book&gt; getBooks(){
-     return bookRepository.findAll();
- }
-}</code></pre></li>
-</ol>
-<ul>
-<li>BookController는 사용자의 요청을 받아서 응답을 처리한다. (MVC에서 Controller)</li>
-<li>의존성 주입으로 @Autowired 로 스프링이 필요한 객체를 자동으로 주입</li>
-<li>BookRepository 라는 인터페이스의 구현체를 찾아서 자동으로 필드에 넣어준다.</li>
-<li>BookController가 직접 BookRepository(데이터베이스)에 접근한다.</li>
-</ul>
-<p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/17f79703-1637-4520-8849-8031f60715ff/image.png" /></p>
-<p>Postman으로 확인할 수도 있다.
-<img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/8dd183f2-8e6f-408b-a7f4-8cef870a12f0/image.png" /></p>
-<p>POST로 컬렉션 리소스(books)에 새 자원을 생성해달라는 요청을 보낸다.</p>
-<ul>
-<li>현재 값을 아무것도 주지 않고 POST해서 nullable=false로 값을 넣어주지 않아서 400 error가 발생한다.</li>
-</ul>
-<p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/f647c499-4e08-4df1-bbae-7c3c29e51ba8/image.png" /></p>
-<p>Body: POST 패킷의 본체</p>
-<ul>
-<li>POST 요청은 데이터를 HTTP 요청의 <strong>Body(본문)</strong>에 담아 전송한다.</li>
-<li>Postman 등의 도구에서 raw + JSON 타입으로 원문 데이터를 직접 작성한다.</li>
-</ul>
-<pre><code>{
+
+- controller가 repos 구현체가 필요하다. =&gt; 요청을 해주어야 한다.
+- DI 의존성 주입으로 controller가 repository가 필요하다~!
+
+
+1. 필드에 직접 넣어주세요</code></pre><p>public class BookController {
+    @Autowired
+    private BookRepository bookRepository; // +bookRepository.findAll()</p>
+<pre><code>@GetMapping(&quot;/books&quot;)
+public List&lt;Book&gt; getBooks(){
+    return bookRepository.findAll();
+}</code></pre><p>}</p>
+<pre><code>- BookController는 사용자의 요청을 받아서 응답을 처리한다. (MVC에서 Controller)
+- 의존성 주입으로 @Autowired 로 스프링이 필요한 객체를 자동으로 주입
+- BookRepository 라는 인터페이스의 구현체를 찾아서 자동으로 필드에 넣어준다.
+- BookController가 직접 BookRepository(데이터베이스)에 접근한다.
+
+![](https://velog.velcdn.com/images/ehekaanldk/post/17f79703-1637-4520-8849-8031f60715ff/image.png)
+
+Postman으로 확인할 수도 있다.
+![](https://velog.velcdn.com/images/ehekaanldk/post/8dd183f2-8e6f-408b-a7f4-8cef870a12f0/image.png)
+
+POST로 컬렉션 리소스(books)에 새 자원을 생성해달라는 요청을 보낸다.
+- 현재 값을 아무것도 주지 않고 POST해서 nullable=false로 값을 넣어주지 않아서 400 error가 발생한다.
+
+![](https://velog.velcdn.com/images/ehekaanldk/post/f647c499-4e08-4df1-bbae-7c3c29e51ba8/image.png)
+
+Body: POST 패킷의 본체
+- POST 요청은 데이터를 HTTP 요청의 **Body(본문)**에 담아 전송한다.
+- Postman 등의 도구에서 raw + JSON 타입으로 원문 데이터를 직접 작성한다.
+</code></pre><p>{
   &quot;title&quot;: &quot;book title&quot;,
   &quot;subTitle&quot;: &quot;book sub title&quot;
-}</code></pre><p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/0d0533be-2e94-4435-a6da-7a454583b4f9/image.png" /></p>
-<blockquote>
-<p>컬렉션 리소스란?
+}</p>
+<pre><code>![](https://velog.velcdn.com/images/ehekaanldk/post/0d0533be-2e94-4435-a6da-7a454583b4f9/image.png)
+
+&gt; 컬렉션 리소스란?
 books는 책의 모음을 의미한다. 
-POST/books 는 books 컬랙션의 새 항목을 추가해줘의 의미이다. </p>
-</blockquote>
-<p>현재는 books를 전체 다 확인한다. 
-@PostMapping(&quot;/books&quot;) 처리했기 때문에 JSON을 Book 객체로 매핑한다. </p>
-<p>book을 하나씩 확인하기 위해서는 
-@GetMapping(&quot;/books/{id}&quot;) 으로 경로 변수로 id를 받는 GET 요청을 처리한다. </p>
-<p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/385a2c1f-4a8e-4aae-8cc5-c06df9db8258/image.png" /></p>
-<ul>
-<li>{id}로 URL 경로 중에 변하는 부분이다. 책의 고유한 번호</li>
-<li><code>bookRepository.findById(id)</code> 으로 해당 ID의 BOOK을 데이터베이스에서 조회</li>
-</ul>
-<p><code>books</code> 경로가 계속 동일하게 사용되는 것을 컨트롤러의 상위로 꺼내서 정의한다. 
-모든 request에 대한 mapping을 <code>/books</code> 로 해준다.</p>
-<p>*<em>도메인 객체를 컨트롤러에서 그대로 사용하는 것은 사실 권장하지 않는다. *</em></p>
-<ul>
-<li>도메인 객체 = @Entity가 붙은 클래스로 DB와 연결된 모델</li>
-</ul>
-<p>DPO를 사용한다. </p>
-<h2 id="dpo">DPO</h2>
-<blockquote>
-<p>DTO는 data를 전송하기 위해서 순수 데이터만 담는 객체이다. </p>
-</blockquote>
-<ul>
-<li>entity와 분리해서 <strong>입력/출력 전용</strong>으로 사용한다. </li>
-</ul>
-<p>객체들이 json으로 직렬화된다.</p>
-<blockquote>
-<p>계층 간의 데이터 전달을 위해서 controller &lt;-&gt; service &lt;-&gt; DB 사이에서 데이터를 안전하게 전달하고, 필요한 데이터만 추려서 보낸다.</p>
-</blockquote>
-<p>🧾 Entity: 실제 문서 원본 (모든 정보 포함)
-📬 DTO: 고객에게 보내는 요약본 (필요한 정보만 간추림)</p>
-<p>순수 데이터 전달용으로 getter, setter만 가지고 있다. </p>
-<p>도메인 객체와 통신을 위한 객체를 분리한다.</p>
-<p>클라이언트에게 받을 때 id 필요없음
-순수 데이터만 받는다는 규격을 정해준다. </p>
-<ul>
-<li>신규책이 들어오면 항상 대출 가능한 상태를 만들어준다. </li>
-<li>POST로 책을 하나씩 넣어주고</li>
-<li>GET으로 전체를 모두 가져와서 읽어준다.
-<img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/c552c46d-57be-412d-91e5-db782bf38371/image.png" /></li>
-</ul>
+POST/books 는 books 컬랙션의 새 항목을 추가해줘의 의미이다. 
+
+현재는 books를 전체 다 확인한다. 
+@PostMapping(&quot;/books&quot;) 처리했기 때문에 JSON을 Book 객체로 매핑한다. 
+
+book을 하나씩 확인하기 위해서는 
+@GetMapping(&quot;/books/{id}&quot;) 으로 경로 변수로 id를 받는 GET 요청을 처리한다. 
+
+![](https://velog.velcdn.com/images/ehekaanldk/post/385a2c1f-4a8e-4aae-8cc5-c06df9db8258/image.png)
+
+- {id}로 URL 경로 중에 변하는 부분이다. 책의 고유한 번호
+- ```bookRepository.findById(id)``` 으로 해당 ID의 BOOK을 데이터베이스에서 조회
+
+```books``` 경로가 계속 동일하게 사용되는 것을 컨트롤러의 상위로 꺼내서 정의한다. 
+모든 request에 대한 mapping을 ```/books``` 로 해준다.
+
+**도메인 객체를 컨트롤러에서 그대로 사용하는 것은 사실 권장하지 않는다. **
+- 도메인 객체 = @Entity가 붙은 클래스로 DB와 연결된 모델
+
+DPO를 사용한다. 
+## DPO
+&gt;DTO는 data를 전송하기 위해서 순수 데이터만 담는 객체이다. 
+
+- entity와 분리해서 **입력/출력 전용**으로 사용한다. 
+
+객체들이 json으로 직렬화된다.
+
+&gt; 계층 간의 데이터 전달을 위해서 controller &lt;-&gt; service &lt;-&gt; DB 사이에서 데이터를 안전하게 전달하고, 필요한 데이터만 추려서 보낸다.
+
+🧾 Entity: 실제 문서 원본 (모든 정보 포함)
+📬 DTO: 고객에게 보내는 요약본 (필요한 정보만 간추림)
+
+순수 데이터 전달용으로 getter, setter만 가지고 있다. 
+
+도메인 객체와 통신을 위한 객체를 분리한다.
+
+클라이언트에게 받을 때 id 필요없음
+순수 데이터만 받는다는 규격을 정해준다. 
+
+
+
+
+- 신규책이 들어오면 항상 대출 가능한 상태를 만들어준다. 
+- POST로 책을 하나씩 넣어주고
+- GET으로 전체를 모두 가져와서 읽어준다.
+![](https://velog.velcdn.com/images/ehekaanldk/post/c552c46d-57be-412d-91e5-db782bf38371/image.png)
+</code></pre>
