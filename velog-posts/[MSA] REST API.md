@@ -253,3 +253,46 @@ POST에서는 있을 수도 있고, 없을 수도 있다. 로그인이 잘 되�
 <ul>
 <li>204 No Content 상태 코드도 주로 이럴 때 사용합니다.</li>
 </ul>
+<h2 id="rest-api-어노테이션">REST API 어노테이션</h2>
+<p>@Entity : 해당 클래스가 엔티티임을 나타낸다.
+@Data : geeter, setter, equals, hashcode, tostring 등 메소드를 자동으로 생성
+@Id : DB 테이블의 기본키
+@Column : DB 에티블의 열
+    - nullable = false : null값을 허용하지 않음
+    - 비워두면 안되는 필드
+@Enumerated : 열거형 타입</p>
+<h2 id="restcontroller">RestController</h2>
+<p>컨트롤러가 모델을 가져와서 잘 만든 후에 view의 이름 (string) 을 리턴한다. 
+rest컨트롤러는 view의 힘을 빌리지 않고 body를 다 채워서 리턴한다. 컨트롤러가 온전히 다 한다.
+mvc 패턴은 view가 json형태로 바뀐 것이다. 
+@GetMapping 
+함수에 리턴에 해당하는 객체가 body에 채워진다.</p>
+<p>DB 연동을 위해서 repository를 사용하려면 DB 컨트롤러 객체인 repository를 사용한다. repository 구현체를 DI로 의존성 주입을 받는다. </p>
+<p>필드주입 : @Autowired
+private BookRepository bookRepository;</p>
+<p>생성자주입 : </p>
+<h2 id="repository">Repository</h2>
+<p>SELECT : findAll(), findById(), findBy필드명()
+INSERT : save(entity), saveAll
+DELETE : delete(entity), deleteById(ID id), deleteAll()</p>
+<h2 id="dto">DTO</h2>
+<blockquote>
+<p>계층 간 데이터 교환을 하기 위해 사용하는 객체
+로직을 갖지 않는 순수한 데이터 객체로 getter/ setter만 가진 클래스</p>
+</blockquote>
+<p>클라이언트에서 서버 쪽으로 전송하는 요청 데이터를 전달 받을 때,
+서버에서 클라이언트 쪽으로 전송하는 응답 데이터를 전송할 때,</p>
+<p>보여지면 안되는 필드 데이터가 담겨있는 경우
+DB의 구조가 바뀌어서 URL의 데이터가 바뀌는 경우
+=&gt; 도메인 객체를 그대로 컨트롤러에 사용하면 좋지 않다.
+=&gt; <strong>통신을 위해서</strong> 사용하는 별도의 클래스인 DTO를 사용한다.
+=&gt; 도메인 객체와 통신을 위한 객체를 분리한다.</p>
+<p>id를 제외하고 상대편에서 주고 받는 필드의 모양을 작성한다.
+함수에 static을 붙여주면 new로 생성하지 않아도 사용이 가능하다.</p>
+<ol>
+<li>domain 폴더에 entity 클래스를 만든다. </li>
+<li>repository 폴더에 repository 를 만든다. interface</li>
+<li>controller 폴더에 controller 를 만든다. 사용자의 요청을 받는 곳
+=&gt; 엔티티의 객체을 반환하고</li>
+<li>dto 폴더에 </li>
+</ol>
