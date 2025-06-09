@@ -15,7 +15,24 @@ series: "Uncategorized"
 <p>노드(정점) -&gt; 연결된 노드들의 리스트</p>
 <p>노드 번호를 key처럼 사용하고,
 연결된 노드들을 value값처럼 생각한다. </p>
-<h2 id="인접-리스트-구현">인접 리스트 구현</h2>
+<h2 id="2가지-대표-표현-방식">2가지 대표 표현 방식</h2>
+<h3 id="arraylistinteger-graph">ArrayList,Integer&gt;[] graph</h3>
+<p>배열 + 제너릭 ArrayList 
+가장 전통적이고 널리 사용되는 방식이다. </p>
+<pre><code>ArrayList&lt;Integer&gt;[] graph = new ArrayList[N + 1];
+
+for (int i = 0; i &lt;= N; i++) {
+    graph[i] = new ArrayList&lt;&gt;();
+}
+</code></pre><h3 id="listlistinteger-graph">List&lt;List&lt;Integer&gt;&gt; graph</h3>
+<p>리스트 안에 리스트
+더 유연하고 안전한 방식</p>
+<pre><code>List&lt;List&lt;Integer&gt;&gt; graph = new ArrayList&lt;&gt;();
+
+for (int i = 0; i &lt;= N; i++) {
+    graph.add(new ArrayList&lt;&gt;());
+}
+</code></pre><h2 id="인접-리스트-구현">인접 리스트 구현</h2>
 <p><code>ArrayList&lt;Integer&gt;[]</code> 으로 자바에서 구현한다. </p>
 <p>key-value 구조를 사용하고 싶을 때,
 <code>HashMap&lt;Integer, List&lt;Integer&gt;&gt;</code> 을 사용하여 구현한다. </p>
