@@ -1,8 +1,7 @@
-
-
 import feedparser
 import git
 import os
+import re
 from datetime import datetime
 
 # Git repo
@@ -17,14 +16,18 @@ repo.git.config('--global', 'user.name', 'github-actions[bot]')
 rss_url = 'https://api.velog.io/rss/@ehekaanldk'
 
 # 프로젝트 루트 경로
-repo_path = '.'
 posts_dir = os.path.join(repo_path, 'velog-posts')
 
 if not os.path.exists(posts_dir):
     os.makedirs(posts_dir)
 
-repo = git.Repo(repo_path)
 feed = feedparser.parse(rss_url)
+
+# ✅ 제목을 URL-safe한 slug로 변환
+def slugify(title):
+    title = re.sub(r'[^\w\s가-힣-]', '', title)  # 특수문자 제거
+    title = re.sub(r'\s+', '-', title.strip())  # 공백 → 하이픈
+    return title.lower()
 
 # 파일이 이미 존재하는지 velog-posts 하위 전체 탐색
 def file_already_exists(base_dir, file_name):
@@ -34,8 +37,9 @@ def file_already_exists(base_dir, file_name):
     return None
 
 for entry in feed.entries:
-    # 파일 이름 생성
-    file_name = entry.title.replace('/', '-').replace('\\', '-') + '.md'
+    # ✅ 안전한 파일 이름 생성
+    safe_title = slugify(entry.title)
+    file_name = safe_title + '.md'
 
     # 본문 내용
     if hasattr(entry, 'content'):
@@ -83,8 +87,7 @@ series: "{series}"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(markdown)
 
-
-# ✅ 여기부터 Git 작업!
+# ✅ Git 작업
 repo.git.add(all=True)
 
 if repo.is_dirty(untracked_files=True):
@@ -92,8 +95,3 @@ if repo.is_dirty(untracked_files=True):
     repo.git.push()
 else:
     print("✅ No changes to commit.")
-
-# Git 커밋 & 푸시
-repo.git.add(all=True)
-repo.git.commit('-m', 'Update Velog posts')  # 변경 없으면 무시됨
-repo.git.push()
