@@ -63,7 +63,12 @@ kubectl apply -f kubernetes/service.yaml</p>
 <ul>
 <li>확인
 kubectl get all</li>
+<li>부가정보 포함 조회
+kubectl get pod -o wide
+조회되는 IP는 Pod에 자동으로 할당된 Cluster 내부 IP 주소이다. </li>
 </ul>
+<p>kubectl apply -f deploy.yaml
+kubectl get pod -w</p>
 <h2 id="git">git</h2>
 <p>git add .
 git commit -m &quot;설명하기&quot;
