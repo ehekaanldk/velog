@@ -18,23 +18,36 @@ series: "Uncategorized"
 <li>Consumer가 수신한 메시지를 확인하는 것</li>
 </ul>
 <ol>
-<li><p>producer(order)는 뒤에 상황은 모르겠고, 주문을 일단 보낸다. 
-터미널1 : 8082 점유 Order</p>
-<pre><code>cd order
-mvn spring-boot:run</code></pre><p>터미널2 : http 주문보냄</p>
-<pre><code>http POST :8082/orders productId=1 qty=3 customerId=hong productName=TV</code></pre></li>
-<li><p>새터미널 추가, kafka를 켜서
-터미널3 : kafka</p>
-<pre><code>cd kafka
+<li>producer(order)는 뒤에 상황은 모르겠고, 주문을 일단 보낸다. 
+터미널1 : 8082 점유 Order<pre><code>cd order
+mvn spring-boot:run</code></pre>터미널2 : http 주문보냄<pre><code>http POST :8082/orders productId=1 qty=3 customerId=hong productName=TV</code></pre></li>
+<li>새터미널 추가, kafka를 켜서
+터미널3 : kafka<pre><code>cd kafka
 docker-compose exec -it kafka /bin/bash
-cd /bin</code></pre></li>
-<li><p>consumer를 연결해서 주문이 잘 왔는지 확인한다. 
-터미널3</p>
-<pre><code>./kafka-console-consumer --bootstrap-server localhost:9092 --topic labshoppubsub  --from-beginning</code></pre></li>
+cd /bin</code></pre>kafka 관련 docker 설정 파일이 위치하고 있는 디렉토리로 이동한다. </li>
+</ol>
+<ul>
+<li>docker-compose.yaml </li>
+<li>해당 디렉토리에서 kafka와 zookeeper가 실행되어야 한다. </li>
+</ul>
+<p>Docker 컨테이너 안으로 집입하는 명령어이다. </p>
+<ul>
+<li>exec : 실행 중인 컨테이너에 명령어를 실행한다. </li>
+<li>-it : 상호작용 가능하게 접속한다.</li>
+<li>kafka : 컨테이너 이름으로 docker-compose.yaml에 정의된 서비스 이름이다.</li>
+<li>/bin/bash : bash 셸을 실행해준다.</li>
+</ul>
+<ol start="3">
+<li>consumer를 연결해서 주문이 잘 왔는지 확인한다. 
+터미널3<pre><code>./kafka-console-consumer --bootstrap-server localhost:9092 --topic labshoppubsub  --from-beginning</code></pre></li>
 </ol>
 <ul>
 <li>주문 이벤트 확인 가능
 <img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/1b5cf768-29b6-454f-b7a7-9214c7d79985/image.png" /></li>
+<li>./kafka-console-consumer : kafka에서 메시지를 읽어오기 위한 CLI도구</li>
+<li>--bootstrap-server localhost:9092 : kafka 서버의 위치 (기본 포트 9092)</li>
+<li>--topic labshoppubsub : 읽어올 토픽 이름 (order 이벤트가 publish된 대상)</li>
+<li>--from-beginning : 초기부터 모든 메시지를 읽겠다</li>
 </ul>
 <hr />
 <p>domain (비즈니스 로직을 담당하는 곳)</p>

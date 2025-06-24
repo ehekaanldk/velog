@@ -73,3 +73,6 @@ kubectl get pod -w</p>
 <p>git add .
 git commit -m &quot;설명하기&quot;
 git push origin main</p>
+<h2 id="codespace">codespace</h2>
+<p>chmod +x init.sh
+./init.sh</p>
