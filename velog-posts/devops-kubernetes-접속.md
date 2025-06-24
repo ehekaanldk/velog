@@ -69,6 +69,19 @@ kubectl get pod -o wide
 </ul>
 <p>kubectl apply -f deploy.yaml
 kubectl get pod -w</p>
+<h3 id="argo">Argo</h3>
+<blockquote>
+<p>argo 설치 방법
+Argo rollout Plug-in을 설치</p>
+</blockquote>
+<ul>
+<li>kubectl create ns argo-rollouts</li>
+<li>kubectl apply -n argo-rollouts -f <a href="https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml">https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml</a>
+argo CLI kubectl Plugin 설치</li>
+<li>curl -LO <a href="https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64">https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64</a></li>
+<li>chmod +x ./kubectl-argo-rollouts-linux-amd64</li>
+<li>sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts</li>
+</ul>
 <h2 id="git">git</h2>
 <p>git add .
 git commit -m &quot;설명하기&quot;
