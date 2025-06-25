@@ -325,3 +325,42 @@ docker build -t [dockerhub ID]/inventory:[오늘날짜] .
 docker push [dockerhub ID]/inventory:[오늘날짜]  
 </code></pre><p><img alt="" src="https://velog.velcdn.com/images/ehekaanldk/post/fdd2c32f-b052-4d86-a6e3-c267fc52c830/image.png" /></p>
 <hr />
+<h2 id="비교">비교</h2>
+<h3 id="dockerfile만으로-이미지-생성-및-실행-vs-java-프로젝트를-먼저-mvn-package로-빌드-후에-docker-이미지-생성">Dockerfile만으로 이미지 생성 및 실행 VS java 프로젝트를 먼저 mvn package로 빌드 후에 Docker 이미지 생성</h3>
+<p><strong>방법 1 : 바로 Dockerfile -&gt; build -&gt; run -&gt; push</strong>
+dockfile 내부에 직접 빌드가 있으면 그때 실행된다.</p>
+<pre><code>FROM nginx:latest
+COPY ./index.html /usr/share/nginx/html</code></pre><p><strong>방법 2 : mvn package 후 dockerfile -&gt; build -&gt; push</strong>
+dockerfile 을 실행하기 전에 Jar 를 생성한다. </p>
+<pre><code>FROM openjdk:17
+COPY target/myapp.jar /app/app.jar
+ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/app/app.jar&quot;]
+</code></pre><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>방식 1</th>
+<th>방식 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>개요</strong></td>
+<td>Dockerfile만으로 이미지 생성 및 실행</td>
+<td>Java 프로젝트를 먼저 <code>mvn package</code>로 빌드 후 Docker 이미지 생성</td>
+</tr>
+<tr>
+<td><strong>JAR 파일 생성 시점</strong></td>
+<td>Dockerfile 내부에서 직접 빌드 (있다면)</td>
+<td>Dockerfile 실행 전에 미리 JAR 생성 (<code>mvn package</code>)</td>
+</tr>
+<tr>
+<td><strong>장점</strong></td>
+<td>Docker 하나로 모든 작업 처리 가능 (CI/CD에 적합)</td>
+<td>빌드 결과를 미리 확인 가능, 실패 시 빠르게 디버깅</td>
+</tr>
+<tr>
+<td><strong>예시 대상</strong></td>
+<td>정적인 nginx 같은 이미지</td>
+<td>Java/Spring Boot 앱과 같이 빌드가 필요한 프로젝트</td>
+</tr>
+</tbody></table>
